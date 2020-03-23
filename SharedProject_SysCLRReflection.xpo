@@ -1,0 +1,1051 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: CLS
+
+; Microsoft Dynamics AX Class: SysCLRReflection выгружен
+; --------------------------------------------------------------------------------
+  CLSVERSION 1
+  
+  CLASS #SysCLRReflection
+    PROPERTIES
+      Name                #SysCLRReflection
+      Extends             #
+      RunOn               #Called from
+    ENDPROPERTIES
+    
+    METHODS
+      Version: 3
+      SOURCE #classDeclaration
+        #/// <summary>
+        #/// https://github.com/d-tolstov/Ax2009-SysCLRReflection
+        #/// Класс аггрегирует в себе функции для работы с рефлексией
+        #/// </summary>
+        #/// <remarks>
+        #///
+        #/// </remarks>
+        #class SysCLRReflection
+        #{
+        #}
+      ENDSOURCE
+      SOURCE #getArray
+        #static System.Object[] getArray(
+        #    anytype     _parameter1 = null
+        #  , anytype     _parameter2 = null
+        #)
+        #{
+        #    System.Object[]     ret;
+        #    int                 parametersCount;
+        #;
+        #    if ( prmisdefault(_parameter1))
+        #    {
+        #        parametersCount = 0;
+        #    }
+        #    else
+        #    if ( prmisdefault(_parameter2))
+        #    {
+        #        parametersCount = 1;
+        #    }
+        #    else
+        #    {
+        #        parametersCount = 2;
+        #    }
+        #
+        #    ret = new System.Object[parametersCount]();
+        #
+        #    if ( !prmisdefault(_parameter1))
+        #    {
+        #        ret.SetValue( _parameter1, 0);
+        #    }
+        #    if ( !prmisdefault(_parameter2))
+        #    {
+        #        ret.SetValue( _parameter2, 1);
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #getPropertyValue
+        #static System.Object getPropertyValue(
+        #    System.Object      _class
+        #  , str                _propertyName
+        #)
+        #{
+        #    return SysCLRReflection::getPropertyValuePrivate(
+        #        _class
+        #      , _propertyName
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #getPropertyValueIndex
+        #static System.Object getPropertyValueIndex(
+        #    System.Object       _class
+        #  , str                 _propertyName
+        #  , anytype             _index
+        #)
+        #{
+        #    return SysCLRReflection::getPropertyValuePrivate(
+        #        _class
+        #      , _propertyName
+        #      , SysCLRReflection::getArray( _index)
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #getPropertyValuePrivate
+        #static System.Object getPropertyValuePrivate(
+        #    System.Object      _class
+        #  , str                _propertyName
+        #  , System.Object[]    _parametersArray = null
+        #)
+        #{
+        #    System.Type                         classType;
+        #    System.Reflection.PropertyInfo      propertyInfo;
+        #
+        #    System.Object                       ret;
+        #
+        #    try
+        #    {
+        #        new InteropPermission(InteropKind::ClrInterop).assert();
+        #
+        #        if ( !_parametersArray
+        #          || CLRInterop::isNull( _parametersArray) )
+        #        {
+        #            _parametersArray    = new System.Object[0]();
+        #        }
+        #
+        #        classType       = _class.GetType();
+        #
+        #        propertyInfo    = classType.GetProperty(_propertyName);
+        #        if ( !CLRInterop::isNull(propertyInfo))
+        #        {
+        #            ret = propertyInfo.GetValue( _class, _parametersArray);
+        #        }
+        #        else
+        #            throw Error(strfmt("Свойство %1 в классе %2 не найдено!", _propertyName, CLRInterop::getAnyTypeForObject(classType.ToString())));
+        #    }
+        #    catch (Exception::CLRError)
+        #    {
+        #        throw error(AifUtil::getClrErrorMessage());
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #getTypeArray
+        #private static System.Type[] getTypeArray(
+        #    System.Type     _type1 = null
+        #  , System.Type     _type2 = null
+        #)
+        #{
+        #    System.Type[]   ret;
+        #    int             typeCount;
+        #;
+        #    if ( prmisdefault(_type1))
+        #    {
+        #        typeCount = 0;
+        #    }
+        #    else
+        #    if ( prmisdefault(_type2))
+        #    {
+        #        typeCount = 1;
+        #    }
+        #    else
+        #    {
+        #        typeCount = 2;
+        #    }
+        #
+        #    ret = new System.Type[typeCount]();
+        #
+        #    if ( !prmisdefault(_type1))
+        #    {
+        #        ret.SetValue( _type1, 0);
+        #    }
+        #    if ( !prmisdefault(_type2))
+        #    {
+        #        ret.SetValue( _type2, 1);
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #invokeMethod
+        #static System.Object invokeMethod(
+        #    System.Object       _object
+        #  , str                 _methodName
+        #  , System.Object[]     _parameters = null
+        #  , boolean             _overloaded = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeMethodGeneric(
+        #        _object
+        #      , _methodName
+        #      , null
+        #      , _parameters
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #invokeMethodGeneric
+        #private static System.Object invokeMethodGeneric(
+        #    System.Object       _object
+        #  , str                 _methodName
+        #  , System.Type[]       _methodTypeArray    = null
+        #  , System.Object[]     _parametersArray    = null
+        #  , boolean             _overloaded         = false
+        #)
+        #{
+        #    System.Type                     classType      = _object.GetType();
+        #    System.Type                     parameterType;
+        #    int                             parametersCount;
+        #    int                             i;
+        #    //BP deviation documented
+        #    System.Type[]                   parameterTypes = new System.Type[i]();
+        #    //BP deviation documented
+        #    System.Object                   parameter;
+        #
+        #    System.Reflection.MethodInfo    methodInfo;
+        #    System.Object                   ret;
+        #
+        #    System.Exception                e;
+        #
+        #    System.Reflection.MethodInfo[]      methods;
+        #    int                                 methodsQty, genericMethodParametersQty, j;
+        #    str                                 genericMethodName;
+        #    System.Reflection.ParameterInfo[]   genericMethodParameters;
+        #    System.Reflection.ParameterInfo     genericMethodParameterInfo;
+        #    System.Type                         genericMethodParameterType;
+        #    System.Reflection.MethodInfo        genericMethodInfo;
+        #    boolean                             parametersEqual;
+        #
+        #    try
+        #    {
+        #        if ( !_parametersArray
+        #          || CLRInterop::isNull( _parametersArray) )
+        #        {
+        #            _parametersArray    = new System.Object[0]();
+        #        }
+        #
+        #        parametersCount = _parametersArray.get_Length();
+        #        parameterTypes  = new System.Type[parametersCount]();
+        #
+        #        for (i = 0; i < parametersCount; i++)
+        #        {
+        #            parameter = _parametersArray.GetValue(i);
+        #            parameterType = parameter.GetType();
+        #            parameterTypes.SetValue(parameterType, i);
+        #        }
+        #
+        #        if ( !_methodTypeArray
+        #          || CLRInterop::isNull( _methodTypeArray) )
+        #        {
+        #            _methodTypeArray    = new System.Type[0]();
+        #        }
+        #
+        #        if (_overloaded)
+        #        {
+        #            methodInfo = classType.GetMethod(_methodName, parameterTypes); //Gets overload with parameters specified
+        #
+        #            if (! methodInfo)
+        #            {
+        #                methods     = classType.GetMethods();
+        #                methodsQty  = methods.get_Length();
+        #
+        #                for (i = 1; i <= methodsQty; i++)
+        #                {
+        #                    methodInfo          = methods.GetValue(i-1);
+        #                    genericMethodName   = methodInfo.get_Name();
+        #
+        #                    if (genericMethodName == _methodName)
+        #                    {
+        #                        genericMethodInfo           = methodInfo.MakeGenericMethod(_methodTypeArray);
+        #                        genericMethodParameters     = genericMethodInfo.GetParameters();
+        #                        genericMethodParametersQty  = genericMethodParameters.get_Length();
+        #
+        #                        if (genericMethodParametersQty == parametersCount)
+        #                        {
+        #                            parametersEqual = true;
+        #
+        #                            for (j = 1; j <= genericMethodParametersQty; j++)
+        #                            {
+        #                                genericMethodParameterInfo  = genericMethodParameters.GetValue(j-1);
+        #                                genericMethodParameterType  = genericMethodParameterInfo.get_ParameterType();
+        #                                parameter                   = _parametersArray.GetValue( j - 1);
+        #                                parameterType               = parameter.GetType();
+        #
+        #                                if (! genericMethodParameterType.Equals(parameterType))
+        #                                {
+        #                                    parametersEqual = false;
+        #                                }
+        #                            }
+        #
+        #                            if (parametersEqual)
+        #                            {
+        #                                break;
+        #                            }
+        #                            else
+        #                            {
+        #                                methodInfo = null;
+        #                            }
+        #                        }
+        #                    }
+        #                    else
+        #                    {
+        #                        methodInfo = null;
+        #                    }
+        #                }
+        #            }
+        #        }
+        #        else
+        #        {
+        #            methodInfo = classType.GetMethod(_methodName);
+        #        }
+        #
+        #        if ( CLRInterop::isNull(methodInfo))
+        #            throw Error( strfmt("Метод %1%2 в классе %3 не найден!"
+        #                       , _methodName
+        #                       , ( !CLRInterop::isNull(_methodTypeArray)
+        #                        && CLRInterop::getAnyTypeForObject(_methodTypeArray.get_Length()) != 0)
+        #                       ? strfmt( "<%1>", SysCLRReflection::typeArray2Str( _methodTypeArray))
+        #                       : ""
+        #                       , CLRInterop::getAnyTypeForObject(classType.ToString()))
+        #                       );
+        #
+        #        if ( methodInfo.get_IsGenericMethod())
+        #        {
+        #            methodInfo = methodInfo.MakeGenericMethod(_methodTypeArray);         //Gets generic method of specified type(s)
+        #        }
+        #
+        #        ret = methodInfo.Invoke( _object, _parametersArray);
+        #    }
+        #    catch (Exception::CLRError)
+        #    {
+        #        //BP deviation documented
+        #        e = CLRInterop::getLastException();
+        #        throw error(e.ToString());
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #invokeMethodGenericType
+        #static System.Object invokeMethodGenericType(
+        #    System.Object       _object
+        #  , str                 _methodName
+        #  , System.Type         _methodType
+        #  , System.Object[]     _parameters = null
+        #  , boolean             _overloaded = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeMethodGeneric(
+        #        _object
+        #      , _methodName
+        #      , SysCLRReflection::getTypeArray( _methodType)
+        #      , _parameters
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #invokeMethodGenericType2
+        #static System.Object invokeMethodGenericType2(
+        #    System.Object       _object
+        #  , str                 _methodName
+        #  , System.Type         _methodType1
+        #  , System.Type         _methodType2
+        #  , System.Object[]     _parameters = null
+        #  , boolean             _overloaded = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeMethodGeneric(
+        #        _object
+        #      , _methodName
+        #      , SysCLRReflection::getTypeArray( _methodType1, _methodType2)
+        #      , _parameters
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #invokeMethodGenericTypeName
+        #static System.Object invokeMethodGenericTypeName(
+        #    System.Object       _object
+        #  , str                 _methodName
+        #  , str                 _methodTypeName
+        #  , System.Object[]     _parameters = null
+        #  , boolean             _overloaded = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeMethodGenericType(
+        #        _object
+        #      , _methodName
+        #      , SysCLRType::newFromTypeName( _methodTypeName).parmClrType()
+        #      , _parameters
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #invokeMethodGenericTypeName2
+        #static System.Object invokeMethodGenericTypeName2(
+        #    System.Object       _object
+        #  , str                 _methodName
+        #  , str                 _methodTypeName1
+        #  , str                 _methodTypeName2
+        #  , System.Object[]     _parameters = null
+        #  , boolean             _overloaded = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeMethodGenericType2(
+        #        _object
+        #      , _methodName
+        #      , SysCLRType::newFromTypeName( _methodTypeName1).parmClrType()
+        #      , SysCLRType::newFromTypeName( _methodTypeName2).parmClrType()
+        #      , _parameters
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #invokeStatic
+        #static System.Object invokeStatic(
+        #    System.Type        _classType
+        #  , str                _methodName
+        #  , System.Object[]    _parametersArray = null
+        #  , boolean            _overloaded      = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeStaticGeneric(
+        #        _classType
+        #      , _methodName
+        #      , null
+        #      , _parametersArray
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #invokeStaticGeneric
+        #private static System.Object invokeStaticGeneric(
+        #    System.Type        _classType
+        #  , str                _methodName
+        #  , System.Type[]      _methodTypeArray
+        #  , System.Object[]    _parametersArray
+        #  , boolean            _overloaded = false
+        #)
+        #{
+        #    System.Type                         parameterType;
+        #    int                                 parametersCount;
+        #    int                                 i;
+        #    //BP deviation documented
+        #    System.Type[]                       parameterTypes = new System.Type[i]();
+        #    System.Object                       parameter;
+        #
+        #    System.Reflection.MethodInfo        methodInfo;
+        #    System.Object                       ret;
+        #
+        #    System.Exception                    e;
+        #
+        #    System.Reflection.MethodInfo[]      methods;
+        #    int                                 methodsQty, genericMethodParametersQty, j;
+        #    str                                 genericMethodName;
+        #    System.Reflection.ParameterInfo[]   genericMethodParameters;
+        #    System.Reflection.ParameterInfo     genericMethodParameterInfo;
+        #    System.Type                         genericMethodParameterType;
+        #    System.Reflection.MethodInfo        genericMethodInfo;
+        #    boolean                             parametersEqual;
+        #
+        #    try
+        #    {
+        #        if ( !_parametersArray
+        #          || CLRInterop::isNull( _parametersArray) )
+        #        {
+        #            _parametersArray    = new System.Object[0]();
+        #        }
+        #
+        #        parametersCount = _parametersArray.get_Length();
+        #        parameterTypes  = new System.Type[parametersCount]();
+        #
+        #        for (i = 0; i < parametersCount; i++)
+        #        {
+        #            parameter = _parametersArray.GetValue(i);
+        #            parameterType = parameter.GetType();
+        #            parameterTypes.SetValue(parameterType, i);
+        #        }
+        #
+        #        if ( !_methodTypeArray
+        #          || CLRInterop::isNull( _methodTypeArray) )
+        #        {
+        #            _methodTypeArray    = new System.Type[0]();
+        #        }
+        #
+        #        if (_overloaded)
+        #        {
+        #            methodInfo = _classType.GetMethod(_methodName, parameterTypes); //Gets overload with parameters specified
+        #
+        #            if (! methodInfo)
+        #            {
+        #                methods     = _classType.GetMethods();
+        #                methodsQty  = methods.get_Length();
+        #
+        #                for (i = 1; i <= methodsQty; i++)
+        #                {
+        #                    methodInfo          = methods.GetValue(i-1);
+        #                    genericMethodName   = methodInfo.get_Name();
+        #
+        #                    if (genericMethodName == _methodName)
+        #                    {
+        #                        genericMethodInfo           = methodInfo.MakeGenericMethod(_methodTypeArray);
+        #                        genericMethodParameters     = genericMethodInfo.GetParameters();
+        #                        genericMethodParametersQty  = genericMethodParameters.get_Length();
+        #
+        #                        if (genericMethodParametersQty == parametersCount)
+        #                        {
+        #                            parametersEqual = true;
+        #
+        #                            for (j = 1; j <= genericMethodParametersQty; j++)
+        #                            {
+        #                                genericMethodParameterInfo  = genericMethodParameters.GetValue(j-1);
+        #                                genericMethodParameterType  = genericMethodParameterInfo.get_ParameterType();
+        #                                parameter                   = _parametersArray.GetValue(j-1);
+        #                                parameterType               = parameter.GetType();
+        #
+        #                                if ( !genericMethodParameterType.Equals(parameterType)
+        #                                  && !CLRInterop::getAnyTypeForObject(genericMethodParameterType.IsAssignableFrom(parameterType)))
+        #                                {
+        #                                    parametersEqual = false;
+        #                                }
+        #                            }
+        #
+        #                            if (parametersEqual)
+        #                            {
+        #                                break;
+        #                            }
+        #                            else
+        #                            {
+        #                                methodInfo = null;
+        #                            }
+        #                        }
+        #                    }
+        #                    else
+        #                    {
+        #                        methodInfo = null;
+        #                    }
+        #                }
+        #            }
+        #        }
+        #        else
+        #        {
+        #            methodInfo = _classType.GetMethod(_methodName);
+        #        }
+        #
+        #        if ( CLRInterop::isNull(methodInfo))
+        #            throw Error( strfmt("Метод %1%2 в классе %3 не найден!"
+        #                       , _methodName
+        #                       , ( !CLRInterop::isNull(_methodTypeArray)
+        #                        && CLRInterop::getAnyTypeForObject(_methodTypeArray.get_Length()) != 0)
+        #                       ? strfmt( "<%1>", SysCLRReflection::typeArray2Str( _methodTypeArray))
+        #                       : ""
+        #                       , CLRInterop::getAnyTypeForObject(_classType.ToString()))
+        #                       );
+        #
+        #        if ( methodInfo.get_IsGenericMethod())
+        #            methodInfo = methodInfo.MakeGenericMethod(_methodTypeArray);         //Gets generic method of specified type(s)
+        #
+        #        ret = methodInfo.Invoke( null, _parametersArray);
+        #    }
+        #    catch (Exception::CLRError)
+        #    {
+        #        //BP deviation documented
+        #        e = CLRInterop::getLastException();
+        #        throw error(e.ToString());
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #invokeStaticGenericType
+        #static System.Object invokeStaticGenericType(
+        #    System.Type        _classType
+        #  , str                _methodName
+        #  , System.Type        _methodType
+        #  , System.Object[]    _parametersArray = null
+        #  , boolean            _overloaded      = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeStaticGeneric(
+        #        _classType
+        #      , _methodName
+        #      , SysCLRReflection::getTypeArray( _methodType)
+        #      , _parametersArray
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #invokeStaticGenericType2
+        #static System.Object invokeStaticGenericType2(
+        #    System.Type        _classType
+        #  , str                _methodName
+        #  , System.Type        _methodType1
+        #  , System.Type        _methodType2
+        #  , System.Object[]    _parametersArray = null
+        #  , boolean            _overloaded      = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeStaticGeneric(
+        #        _classType
+        #      , _methodName
+        #      , SysCLRReflection::getTypeArray( _methodType1, _methodType2)
+        #      , _parametersArray
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #invokeStaticName
+        #static System.Object invokeStaticName(
+        #    str                 _className
+        #  , str                 _methodName
+        #  , System.Object[]     _parametersArray = null
+        #  , boolean             _overloaded      = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeStaticGeneric(
+        #        SysCLRType::newFromTypeName(_className).parmClrType()
+        #      , _methodName
+        #      , null
+        #      , _parametersArray
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #invokeStaticNameGenericType
+        #static System.Object invokeStaticNameGenericType(
+        #    str                 _className
+        #  , str                 _methodName
+        #  , System.Type         _methodType
+        #  , System.Object[]     _parametersArray = null
+        #  , boolean             _overloaded      = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeStaticGeneric(
+        #        SysCLRType::newFromTypeName(_className).parmClrType()
+        #      , _methodName
+        #      , SysCLRReflection::getTypeArray( _methodType)
+        #      , _parametersArray
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #invokeStaticNameGenericType2
+        #static System.Object invokeStaticNameGenericType2(
+        #    str                 _className
+        #  , str                 _methodName
+        #  , System.Type         _methodType1
+        #  , System.Type         _methodType2
+        #  , System.Object[]     _parametersArray = null
+        #  , boolean             _overloaded      = false
+        #)
+        #{
+        #    return SysCLRReflection::invokeStaticGeneric(
+        #        SysCLRType::newFromTypeName(_className).parmClrType()
+        #      , _methodName
+        #      , SysCLRReflection::getTypeArray( _methodType1, _methodType2)
+        #      , _parametersArray
+        #      , _overloaded
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #setPropertyValue
+        #static void setPropertyValue(
+        #    System.Object       _class
+        #  , str                 _propertyName
+        #  , System.Object       _propertyValue
+        #)
+        #{
+        #;
+        #    SysCLRReflection::setPropertyValuePrivate(
+        #        _class
+        #      , _propertyName
+        #      , _propertyValue
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #setPropertyValueIndex
+        #static void setPropertyValueIndex(
+        #    System.Object       _class
+        #  , str                 _propertyName
+        #  , System.Object       _propertyValue
+        #  , anytype             _index
+        #)
+        #{
+        #;
+        #    SysCLRReflection::setPropertyValuePrivate(
+        #        _class
+        #      , _propertyName
+        #      , _propertyValue
+        #      , SysCLRReflection::getArray( _index)
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #setPropertyValueIndex2
+        #static void setPropertyValueIndex2(
+        #    System.Object       _class
+        #  , str                 _propertyName
+        #  , System.Object       _propertyValue
+        #  , System.Object       _index1
+        #  , System.Object       _index2
+        #)
+        #{
+        #;
+        #    SysCLRReflection::setPropertyValuePrivate(
+        #        _class
+        #      , _propertyName
+        #      , _propertyValue
+        #      , SysCLRReflection::getArray( _index1, _index2)
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #setPropertyValuePrivate
+        #private static void setPropertyValuePrivate(
+        #    System.Object       _class
+        #  , str                 _propertyName
+        #  , System.Object       _propertyValue
+        #  , System.Object[]     _indexArray = null
+        #)
+        #{
+        #    System.Type                         classType;
+        #    System.Reflection.PropertyInfo      propertyInfo;
+        #
+        #    try
+        #    {
+        #        new InteropPermission(InteropKind::ClrInterop).assert();
+        #
+        #        if ( !_indexArray
+        #          || CLRInterop::isNull( _indexArray) )
+        #        {
+        #            _indexArray    = new System.Object[0]();
+        #        }
+        #
+        #        classType       = _class.GetType();
+        #
+        #        propertyInfo    = classType.GetProperty(_propertyName);
+        #        if ( !CLRInterop::isNull(propertyInfo))
+        #        {
+        #            propertyInfo.SetValue( _class, _propertyValue, _indexArray);
+        #        }
+        #        else
+        #            throw Error( strfmt("Свойство %1 в классе %2 не найдено!", _propertyName, CLRInterop::getAnyTypeForObject(classType.ToString())));
+        #    }
+        #    catch (Exception::CLRError)
+        #    {
+        #        throw error(AifUtil::getClrErrorMessage());
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #typeArray2Str
+        #private static str typeArray2Str(
+        #    System.Type[]   typeArray
+        #)
+        #{
+        #    str         ret;
+        #    int         i;
+        #    System.Type type;
+        #;
+        #    for (i=0; i< CLRInterop::getAnyTypeForObject(typeArray.get_Length()); i++)
+        #    {
+        #        type    = typeArray.GetValue(i);
+        #        ret += (ret?",":"") + CLRInterop::getAnyTypeForObject(type.ToString());
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDCLASS
+
+***Element: CLS
+
+; Microsoft Dynamics AX Class: SysCLRReflectionTest выгружен
+; --------------------------------------------------------------------------------
+  CLSVERSION 1
+  
+  CLASS #SysCLRReflectionTest
+    PROPERTIES
+      Name                #SysCLRReflectionTest
+      Extends             #SysTestCase
+      RunOn               #Called from
+    ENDPROPERTIES
+    
+    METHODS
+      Version: 3
+      SOURCE #testSetPropertyValueIndex
+        #void testSetPropertyValueIndex()
+        #{
+        #    System.Collections.ArrayList   s;
+        #;
+        #    s   = new System.Collections.ArrayList(3);
+        #    this.assertEquals( 3, CLRInterop::getAnyTypeForObject(s.get_Capacity()));
+        #    s.Add( "01");
+        #    s.Add( "02");
+        #    s.Add( "03");
+        #
+        #    SysCLRReflection::setPropertyValueIndex(
+        #        s
+        #      , "Item"
+        #      , 10
+        #      , 1
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #classDeclaration
+        #class SysCLRReflectionTest extends SysTestCase
+        #{
+        #}
+      ENDSOURCE
+      SOURCE #testGetArray
+        #void testGetArray()
+        #{
+        #    System.Object[] array;
+        #;
+        #    array   = SysCLRReflection::getArray();
+        #    this.assertNotNull( array);
+        #
+        #    array   = SysCLRReflection::getArray( "test1");
+        #    this.assertNotNull( array);
+        #
+        #    array   = SysCLRReflection::getArray( "test1", "test2");
+        #    this.assertNotNull( array);
+        #
+        #    array   = SysCLRReflection::getArray( 100);
+        #    this.assertNotNull( array);
+        #
+        #    array   = SysCLRReflection::getArray( 100, 200);
+        #    this.assertNotNull( array);
+        #}
+      ENDSOURCE
+      SOURCE #testGetArrayCLR
+        #void testGetArrayCLR()
+        #{
+        #    System.Object[] array;
+        #    System.Type     type1;
+        #    System.Type     type2;
+        #;
+        #    array   = SysCLRReflection::getArray();
+        #    this.assertNotNull( array);
+        #
+        #    type1   = System.Type::GetType("System.String");
+        #    array   = SysCLRReflection::getArray( type1);
+        #    this.assertNotNull( array);
+        #
+        #    type2   = System.Type::GetType("System.Int32");
+        #    array   = SysCLRReflection::getArray( type1, type2);
+        #    this.assertNotNull( array);
+        #}
+      ENDSOURCE
+      SOURCE #testGetNotexistPropertyValue
+        #void testGetNotexistPropertyValue()
+        #{
+        #    System.String   s = "test";
+        #    int             result;
+        #;
+        #    this.parmExceptionExpected( true, "Свойство NotexistProperty в классе System.String не найдено!");
+        #
+        #    result  = SysCLRReflection::getPropertyValue(
+        #        s
+        #      , "NotexistProperty"
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #testGetPropertyValue
+        #void testGetPropertyValue()
+        #{
+        #    System.String   s = "test";
+        #    int             result;
+        #;
+        #    result  = SysCLRReflection::getPropertyValue(
+        #        s
+        #      , "Length"
+        #    );
+        #    this.assertEquals( 4, result);
+        #}
+      ENDSOURCE
+      SOURCE #testInvokeNotexistMethod
+        #void testInvokeNotexistMethod()
+        #{
+        #    System.String   s = "test";
+        #    str             result;
+        #;
+        #    this.parmExceptionExpected( true, "Метод NotexistMethod в классе System.String не найден!");
+        #    result  = SysCLRReflection::invokeMethod( s, "NotexistMethod");
+        #}
+      ENDSOURCE
+      SOURCE #testInvokeNotexistMethodGenericType
+        #void testInvokeNotexistMethodGenericType()
+        #{
+        #    System.String   s = "test";
+        #    str             result;
+        #;
+        #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32> в классе System.String не найден!");
+        #
+        #    result  = SysCLRReflection::invokeMethodGenericType(
+        #        s
+        #      , "NotexistMethod"
+        #      , SysCLRType::newFromTypeName("System.Int32").parmClrType()
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #testInvokeNotexistMethodGenericType2
+        #void testInvokeNotexistMethodGenericType2()
+        #{
+        #    System.String   s = "test";
+        #    str             result;
+        #;
+        #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32,System.String> в классе System.String не найден!");
+        #
+        #    result  = SysCLRReflection::invokeMethodGenericType2(
+        #        s
+        #      , "NotexistMethod"
+        #      , SysCLRType::newFromTypeName("System.Int32").parmClrType()
+        #      , SysCLRType::newFromTypeName("System.String").parmClrType()
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #testInvokeNotexistMethodGenericTypeName
+        #void testInvokeNotexistMethodGenericTypeName()
+        #{
+        #    System.String   s = "test";
+        #    str             result;
+        #;
+        #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32> в классе System.String не найден!");
+        #
+        #    result  = SysCLRReflection::invokeMethodGenericTypeName(
+        #        s
+        #      , "NotexistMethod"
+        #      , "System.Int32"
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #testInvokeNotexistMethodGenericTypeName2
+        #void testInvokeNotexistMethodGenericTypeName2()
+        #{
+        #    System.String   s = "test";
+        #    str             result;
+        #;
+        #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32,System.String> в классе System.String не найден!");
+        #
+        #    result  = SysCLRReflection::invokeMethodGenericTypeName2(
+        #        s
+        #      , "NotexistMethod"
+        #      , "System.Int32"
+        #      , "System.String"
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #testInvokeParameterOne
+        #void testInvokeParameterOne()
+        #{
+        #    System.String   s = "test";
+        #    boolean         result;
+        #;
+        #    result  = SysCLRReflection::invokeMethod(
+        #        s
+        #      , "Contains"
+        #      , SysCLRReflection::getArray("s")
+        #    );
+        #
+        #    this.assertTrue( result);
+        #
+        #    result  = SysCLRReflection::invokeMethod(
+        #        s
+        #      , "Contains"
+        #      , SysCLRReflection::getArray("i")
+        #    );
+        #
+        #    this.assertFalse( result);
+        #}
+      ENDSOURCE
+      SOURCE #testInvokeParameterTwo
+        #void testInvokeParameterTwo()
+        #{
+        #    System.String   s = "test";
+        #    str             result;
+        #;
+        #    result  = SysCLRReflection::invokeMethod(
+        #        s
+        #      , "Replace"
+        #      , SysCLRReflection::getArray( "s", "v")
+        #      , true
+        #    );
+        #
+        #    this.assertEquals( "tevt", result);
+        #}
+      ENDSOURCE
+      SOURCE #testInvokeSimple
+        #void testInvokeSimple()
+        #{
+        #    System.String   s = "test";
+        #    str             result;
+        #;
+        #    result  = SysCLRReflection::invokeMethod( s, "Clone");
+        #
+        #    this.assertEquals( "test", result);
+        #}
+      ENDSOURCE
+      SOURCE #testSetNotexistPropertyValue
+        #void testSetNotexistPropertyValue()
+        #{
+        #    System.Collections.ArrayList   s;
+        #;
+        #    s   = new System.Collections.ArrayList();
+        #
+        #    this.parmExceptionExpected( true, "Свойство NotexistProperty в классе System.Collections.ArrayList не найдено!");
+        #    SysCLRReflection::setPropertyValue(
+        #        s
+        #      , "NotexistProperty"
+        #      , 10
+        #    );
+        #}
+      ENDSOURCE
+      SOURCE #testSetPropertyValue
+        #void testSetPropertyValue()
+        #{
+        #    System.Collections.ArrayList   s;
+        #;
+        #    s   = new System.Collections.ArrayList();
+        #
+        #    SysCLRReflection::setPropertyValue(
+        #        s
+        #      , "Capacity"
+        #      , 10
+        #    );
+        #    this.assertEquals( 10, CLRInterop::getAnyTypeForObject(s.get_Capacity()));
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDCLASS
+
+***Element: PRN
+
+; Microsoft Dynamics AX Project : SysCLRReflection unloaded
+; --------------------------------------------------------------------------------
+  PROJECTVERSION 2
+  
+  PROJECT #SysCLRReflection
+   SHARED
+  PROPERTIES
+    Name                #SysCLRReflection
+  ENDPROPERTIES
+  
+    PROJECTCLASS ProjectNode
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 45
+      UTILOBJECTID 41901
+      NODETYPE 329
+      NAME #SysCLRReflection
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 45
+      UTILOBJECTID 41902
+      NODETYPE 329
+      NAME #SysCLRReflectionTest
+    ENDNODE
+  ENDPROJECT
+  
+
+***Element: END
