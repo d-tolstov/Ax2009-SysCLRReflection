@@ -51,6 +51,8 @@ Formatversion: 1
         #        parametersCount = 2;
         #    }
         #
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
         #    ret = new System.Object[parametersCount]();
         #
         #    if ( !prmisdefault(_parameter1))
@@ -154,6 +156,8 @@ Formatversion: 1
         #        typeCount = 2;
         #    }
         #
+        #    new InteropPermission(InteropKind::ClrInterop).assert();
+        #
         #    ret = new System.Type[typeCount]();
         #
         #    if ( !prmisdefault(_type1))
@@ -194,12 +198,12 @@ Formatversion: 1
         #  , boolean             _overloaded         = false
         #)
         #{
-        #    System.Type                     classType      = _object.GetType();
+        #    System.Type                     classType;
         #    System.Type                     parameterType;
         #    int                             parametersCount;
         #    int                             i;
         #    //BP deviation documented
-        #    System.Type[]                   parameterTypes = new System.Type[i]();
+        #    System.Type[]                   parameterTypes;
         #    //BP deviation documented
         #    System.Object                   parameter;
         #
@@ -219,6 +223,10 @@ Formatversion: 1
         #
         #    try
         #    {
+        #        new InteropPermission(InteropKind::ClrInterop).assert();
+        #
+        #        classType      = _object.GetType();
+        #
         #        if ( !_parametersArray
         #          || CLRInterop::isNull( _parametersArray) )
         #        {
@@ -432,7 +440,7 @@ Formatversion: 1
         #    int                                 parametersCount;
         #    int                                 i;
         #    //BP deviation documented
-        #    System.Type[]                       parameterTypes = new System.Type[i]();
+        #    System.Type[]                       parameterTypes;
         #    System.Object                       parameter;
         #
         #    System.Reflection.MethodInfo        methodInfo;
@@ -451,6 +459,8 @@ Formatversion: 1
         #
         #    try
         #    {
+        #        new InteropPermission(InteropKind::ClrInterop).assert();
+        #
         #        if ( !_parametersArray
         #          || CLRInterop::isNull( _parametersArray) )
         #        {
@@ -767,30 +777,11 @@ Formatversion: 1
     PROPERTIES
       Name                #SysCLRReflectionTest
       Extends             #SysTestCase
-      RunOn               #Called from
+      RunOn               #Server
     ENDPROPERTIES
     
     METHODS
       Version: 3
-      SOURCE #testSetPropertyValueIndex
-        #void testSetPropertyValueIndex()
-        #{
-        #    System.Collections.ArrayList   s;
-        #;
-        #    s   = new System.Collections.ArrayList(3);
-        #    this.assertEquals( 3, CLRInterop::getAnyTypeForObject(s.get_Capacity()));
-        #    s.Add( "01");
-        #    s.Add( "02");
-        #    s.Add( "03");
-        #
-        #    SysCLRReflection::setPropertyValueIndex(
-        #        s
-        #      , "Item"
-        #      , 10
-        #      , 1
-        #    );
-        #}
-      ENDSOURCE
       SOURCE #classDeclaration
         #class SysCLRReflectionTest extends SysTestCase
         #{
@@ -827,6 +818,8 @@ Formatversion: 1
         #    array   = SysCLRReflection::getArray();
         #    this.assertNotNull( array);
         #
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
         #    type1   = System.Type::GetType("System.String");
         #    array   = SysCLRReflection::getArray( type1);
         #    this.assertNotNull( array);
@@ -839,9 +832,13 @@ Formatversion: 1
       SOURCE #testGetNotexistPropertyValue
         #void testGetNotexistPropertyValue()
         #{
-        #    System.String   s = "test";
+        #    System.String   s;
         #    int             result;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s = "test";
+        #
         #    this.parmExceptionExpected( true, "Свойство NotexistProperty в классе System.String не найдено!");
         #
         #    result  = SysCLRReflection::getPropertyValue(
@@ -853,9 +850,13 @@ Formatversion: 1
       SOURCE #testGetPropertyValue
         #void testGetPropertyValue()
         #{
-        #    System.String   s = "test";
+        #    System.String   s;
         #    int             result;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s = "test";
+        #
         #    result  = SysCLRReflection::getPropertyValue(
         #        s
         #      , "Length"
@@ -866,9 +867,13 @@ Formatversion: 1
       SOURCE #testInvokeNotexistMethod
         #void testInvokeNotexistMethod()
         #{
-        #    System.String   s = "test";
+        #    System.String   s;
         #    str             result;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s = "test";
+        #
         #    this.parmExceptionExpected( true, "Метод NotexistMethod в классе System.String не найден!");
         #    result  = SysCLRReflection::invokeMethod( s, "NotexistMethod");
         #}
@@ -876,9 +881,13 @@ Formatversion: 1
       SOURCE #testInvokeNotexistMethodGenericType
         #void testInvokeNotexistMethodGenericType()
         #{
-        #    System.String   s = "test";
+        #    System.String   s;
         #    str             result;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s = "test";
+        #
         #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32> в классе System.String не найден!");
         #
         #    result  = SysCLRReflection::invokeMethodGenericType(
@@ -891,9 +900,13 @@ Formatversion: 1
       SOURCE #testInvokeNotexistMethodGenericType2
         #void testInvokeNotexistMethodGenericType2()
         #{
-        #    System.String   s = "test";
+        #    System.String   s;
         #    str             result;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s = "test";
+        #
         #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32,System.String> в классе System.String не найден!");
         #
         #    result  = SysCLRReflection::invokeMethodGenericType2(
@@ -907,9 +920,13 @@ Formatversion: 1
       SOURCE #testInvokeNotexistMethodGenericTypeName
         #void testInvokeNotexistMethodGenericTypeName()
         #{
-        #    System.String   s = "test";
+        #    System.String   s;
         #    str             result;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s = "test";
+        #
         #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32> в классе System.String не найден!");
         #
         #    result  = SysCLRReflection::invokeMethodGenericTypeName(
@@ -922,9 +939,13 @@ Formatversion: 1
       SOURCE #testInvokeNotexistMethodGenericTypeName2
         #void testInvokeNotexistMethodGenericTypeName2()
         #{
-        #    System.String   s = "test";
+        #    System.String   s;
         #    str             result;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s = "test";
+        #
         #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32,System.String> в классе System.String не найден!");
         #
         #    result  = SysCLRReflection::invokeMethodGenericTypeName2(
@@ -938,9 +959,13 @@ Formatversion: 1
       SOURCE #testInvokeParameterOne
         #void testInvokeParameterOne()
         #{
-        #    System.String   s = "test";
+        #    System.String   s;
         #    boolean         result;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s = "test";
+        #
         #    result  = SysCLRReflection::invokeMethod(
         #        s
         #      , "Contains"
@@ -961,9 +986,13 @@ Formatversion: 1
       SOURCE #testInvokeParameterTwo
         #void testInvokeParameterTwo()
         #{
-        #    System.String   s = "test";
+        #    System.String   s;
         #    str             result;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s = "test";
+        #
         #    result  = SysCLRReflection::invokeMethod(
         #        s
         #      , "Replace"
@@ -977,9 +1006,13 @@ Formatversion: 1
       SOURCE #testInvokeSimple
         #void testInvokeSimple()
         #{
-        #    System.String   s = "test";
+        #    System.String   s;
         #    str             result;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s = "test";
+        #
         #    result  = SysCLRReflection::invokeMethod( s, "Clone");
         #
         #    this.assertEquals( "test", result);
@@ -990,6 +1023,8 @@ Formatversion: 1
         #{
         #    System.Collections.ArrayList   s;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
         #    s   = new System.Collections.ArrayList();
         #
         #    this.parmExceptionExpected( true, "Свойство NotexistProperty в классе System.Collections.ArrayList не найдено!");
@@ -1005,6 +1040,8 @@ Formatversion: 1
         #{
         #    System.Collections.ArrayList   s;
         #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
         #    s   = new System.Collections.ArrayList();
         #
         #    SysCLRReflection::setPropertyValue(
@@ -1013,6 +1050,27 @@ Formatversion: 1
         #      , 10
         #    );
         #    this.assertEquals( 10, CLRInterop::getAnyTypeForObject(s.get_Capacity()));
+        #}
+      ENDSOURCE
+      SOURCE #testSetPropertyValueIndex
+        #void testSetPropertyValueIndex()
+        #{
+        #    System.Collections.ArrayList   s;
+        #;
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    s   = new System.Collections.ArrayList(3);
+        #    this.assertEquals( 3, CLRInterop::getAnyTypeForObject(s.get_Capacity()));
+        #    s.Add( "01");
+        #    s.Add( "02");
+        #    s.Add( "03");
+        #
+        #    SysCLRReflection::setPropertyValueIndex(
+        #        s
+        #      , "Item"
+        #      , 10
+        #      , 1
+        #    );
         #}
       ENDSOURCE
     ENDMETHODS
