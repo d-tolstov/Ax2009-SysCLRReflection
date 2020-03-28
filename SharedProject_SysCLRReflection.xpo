@@ -499,7 +499,14 @@ Formatversion: 1
         #
         #                    if (genericMethodName == _methodName)
         #                    {
-        #                        genericMethodInfo           = methodInfo.MakeGenericMethod(_methodTypeArray);
+        #                        if ( methodInfo.get_IsGenericMethodDefinition())
+        #                        {
+        #                            genericMethodInfo           = methodInfo.MakeGenericMethod(_methodTypeArray);
+        #                        }
+        #                        else
+        #                        {
+        #                            genericMethodInfo           = methodInfo;
+        #                        }
         #                        genericMethodParameters     = genericMethodInfo.GetParameters();
         #                        genericMethodParametersQty  = genericMethodParameters.get_Length();
         #
