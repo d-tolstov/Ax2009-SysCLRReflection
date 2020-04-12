@@ -29,6 +29,22 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #getArray
+        #/// <summary>
+        #/// Преобразование списка параметров в массив System.Object[]
+        #/// Если указанного кол-ва параметров не хватает, то используйте функцию getArrayFromContainer
+        #/// </summary>
+        #/// <param name="_parameter1">
+        #/// Первый параметр
+        #/// </param>
+        #/// <param name="_parameter2">
+        #/// Второй параметр
+        #/// </param>
+        #/// <returns>
+        #/// Массив параметров System.Object[]
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object[] getArray(
         #    anytype     _parameter1 = null
         #  , anytype     _parameter2 = null
@@ -67,7 +83,57 @@ Formatversion: 1
         #    return ret;
         #}
       ENDSOURCE
+      SOURCE #getArrayFromContainer
+        #/// <summary>
+        #/// Преобразование списка параметров из контейнера в массив System.Object[]
+        #/// </summary>
+        #/// <param name="_parametersContainer">
+        #/// Контейнер с параметрами
+        #/// </param>
+        #/// <returns>
+        #/// Массив параметров System.Object[]
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
+        #static System.Object[] getArrayFromContainer(
+        #    container   _parametersContainer = connull()
+        #)
+        #{
+        #    System.Object[]     ret;
+        #    int                 parametersCount;
+        #    int                 i;
+        #;
+        #    parametersCount = conlen( _parametersContainer);
+        #
+        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #
+        #    ret = new System.Object[parametersCount]();
+        #
+        #    for (i=1; i<=parametersCount; i++)
+        #    {
+        #        ret.SetValue( conpeek( _parametersContainer, i), i-1);
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
       SOURCE #getPropertyValue
+        #/// <summary>
+        #/// Получение свойства CLR-объекта
+        #/// </summary>
+        #/// <param name="_class">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_propertyName">
+        #/// Название свойства
+        #/// </param>
+        #/// <returns>
+        #/// Значение свойства
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object getPropertyValue(
         #    System.Object      _class
         #  , str                _propertyName
@@ -80,6 +146,24 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #getPropertyValueIndex
+        #/// <summary>
+        #/// Получение свойства CLR-объекта с индексом
+        #/// </summary>
+        #/// <param name="_class">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_propertyName">
+        #/// Название свойства
+        #/// </param>
+        #/// <param name="_index">
+        #/// Индекс свойства
+        #/// </param>
+        #/// <returns>
+        #/// Значение свойства
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object getPropertyValueIndex(
         #    System.Object       _class
         #  , str                 _propertyName
@@ -94,7 +178,31 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #getPropertyValuePrivate
-        #static System.Object getPropertyValuePrivate(
+        #/// <summary>
+        #/// Общая функция для получения свойства CLR-объекта. Без индексов и с индексами.
+        #/// </summary>
+        #/// <param name="_class">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_propertyName">
+        #/// Название свойства
+        #/// </param>
+        #/// <param name="_parametersArray">
+        #/// Массив индексов свойства
+        #/// </param>
+        #/// <returns>
+        #/// Значение свойства
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
+        #/// <exception cref="Exception::Error">
+        #///
+        #/// </exception>
+        #/// <exception cref="Exception::Error">
+        #///
+        #/// </exception>
+        #private static System.Object getPropertyValuePrivate(
         #    System.Object      _class
         #  , str                _propertyName
         #  , System.Object[]    _parametersArray = null
@@ -134,6 +242,21 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #getTypeArray
+        #/// <summary>
+        #/// Получение массива типов System.Type[] для generic-функций
+        #/// </summary>
+        #/// <param name="_type1">
+        #/// Первый тип
+        #/// </param>
+        #/// <param name="_type2">
+        #/// Второй тип
+        #/// </param>
+        #/// <returns>
+        #/// Массив типов
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #private static System.Type[] getTypeArray(
         #    System.Type     _type1 = null
         #  , System.Type     _type2 = null
@@ -173,6 +296,27 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeMethod
+        #/// <summary>
+        #/// Вызов обычной функции CLR-объекта
+        #/// </summary>
+        #/// <param name="_object">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_parameters">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeMethod(
         #    System.Object       _object
         #  , str                 _methodName
@@ -190,6 +334,36 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeMethodGeneric
+        #/// <summary>
+        #/// Общая функция для вызова функций CLR-объекта. Обычных или generic-функций.
+        #/// </summary>
+        #/// <param name="_object">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_methodTypeArray">
+        #/// Массив типов для generic-функций (можно сформировать с помощью функции getTypeArray)
+        #/// </param>
+        #/// <param name="_parametersArray">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
+        #/// <exception cref="Exception::Error">
+        #///
+        #/// </exception>
+        #/// <exception cref="Exception::Error">
+        #///
+        #/// </exception>
         #private static System.Object invokeMethodGeneric(
         #    System.Object       _object
         #  , str                 _methodName
@@ -336,6 +510,30 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeMethodGenericType
+        #/// <summary>
+        #/// Вызов generic-функции CLR-объекта. С указанием одного типа generic.
+        #/// </summary>
+        #/// <param name="_object">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_methodType">
+        #/// Тип generic
+        #/// </param>
+        #/// <param name="_parameters">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeMethodGenericType(
         #    System.Object       _object
         #  , str                 _methodName
@@ -354,6 +552,33 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeMethodGenericType2
+        #/// <summary>
+        #/// Вызов generic-функции CLR-объекта. С указанием двух типов generic.
+        #/// </summary>
+        #/// <param name="_object">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_methodType1">
+        #/// Первый тип generic
+        #/// </param>
+        #/// <param name="_methodType2">
+        #/// Второй тип generic
+        #/// </param>
+        #/// <param name="_parameters">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeMethodGenericType2(
         #    System.Object       _object
         #  , str                 _methodName
@@ -373,6 +598,30 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeMethodGenericTypeName
+        #/// <summary>
+        #/// Вызов generic-функции CLR-объекта. С указанием одного типа generic по его названию.
+        #/// </summary>
+        #/// <param name="_object">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_methodTypeName">
+        #/// Название типа generic
+        #/// </param>
+        #/// <param name="_parameters">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeMethodGenericTypeName(
         #    System.Object       _object
         #  , str                 _methodName
@@ -391,6 +640,33 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeMethodGenericTypeName2
+        #/// <summary>
+        #/// Вызов generic-функции CLR-объекта. С указанием двух типов generic по их названию.
+        #/// </summary>
+        #/// <param name="_object">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_methodTypeName1">
+        #/// Название первого типа generic
+        #/// </param>
+        #/// <param name="_methodTypeName2">
+        #/// Название второго типа generic
+        #/// </param>
+        #/// <param name="_parameters">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeMethodGenericTypeName2(
         #    System.Object       _object
         #  , str                 _methodName
@@ -411,6 +687,27 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeStatic
+        #/// <summary>
+        #/// Вызов статической функции класса. С указанием типа класса.
+        #/// </summary>
+        #/// <param name="_classType">
+        #/// Тип класса
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_parametersArray">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeStatic(
         #    System.Type        _classType
         #  , str                _methodName
@@ -428,6 +725,30 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeStaticGeneric
+        #/// <summary>
+        #/// Вызов статической generic-функции класса. С указанием типа класса.
+        #/// </summary>
+        #/// <param name="_classType">
+        #/// Тип класса
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_methodTypeArray">
+        #/// Массив типов generic (можно сформировать с помощью функции getTypeArray)
+        #/// </param>
+        #/// <param name="_parametersArray">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #private static System.Object invokeStaticGeneric(
         #    System.Type        _classType
         #  , str                _methodName
@@ -576,6 +897,30 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeStaticGenericType
+        #/// <summary>
+        #/// Вызов статической generic-функции класса. С одним типом generic.
+        #/// </summary>
+        #/// <param name="_classType">
+        #/// Тип класса
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_methodType">
+        #/// Тип generic
+        #/// </param>
+        #/// <param name="_parametersArray">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeStaticGenericType(
         #    System.Type        _classType
         #  , str                _methodName
@@ -594,6 +939,33 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeStaticGenericType2
+        #/// <summary>
+        #/// Вызов статической generic-функции класса. С двумя типами generic.
+        #/// </summary>
+        #/// <param name="_classType">
+        #/// Тип класса
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_methodType1">
+        #/// Первый тип generic
+        #/// </param>
+        #/// <param name="_methodType2">
+        #/// Второй тип generic
+        #/// </param>
+        #/// <param name="_parametersArray">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeStaticGenericType2(
         #    System.Type        _classType
         #  , str                _methodName
@@ -613,6 +985,27 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeStaticName
+        #/// <summary>
+        #/// Вызов статической функции класса. С указанием названия класса.
+        #/// </summary>
+        #/// <param name="_className">
+        #/// Название класса
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_parametersArray">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeStaticName(
         #    str                 _className
         #  , str                 _methodName
@@ -630,6 +1023,30 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeStaticNameGenericType
+        #/// <summary>
+        #/// Вызов статической generic-функции класса. С указанием названия класса. С указанием одного типа generic.
+        #/// </summary>
+        #/// <param name="_className">
+        #/// Название класса
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_methodType">
+        #/// Тип generic
+        #/// </param>
+        #/// <param name="_parametersArray">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeStaticNameGenericType(
         #    str                 _className
         #  , str                 _methodName
@@ -648,6 +1065,33 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #invokeStaticNameGenericType2
+        #/// <summary>
+        #/// Вызов статической generic-функции класса. С указанием названия класса. С указанием двух типов generic.
+        #/// </summary>
+        #/// <param name="_className">
+        #/// Название класса
+        #/// </param>
+        #/// <param name="_methodName">
+        #/// Название функции
+        #/// </param>
+        #/// <param name="_methodType1">
+        #/// Первый тип generic
+        #/// </param>
+        #/// <param name="_methodType2">
+        #/// Второй тип generic
+        #/// </param>
+        #/// <param name="_parametersArray">
+        #/// Массив параметров (можно сформировать с помощью функций getArray и getArrayFromContainer)
+        #/// </param>
+        #/// <param name="_overloaded">
+        #/// Устанавливается в true для функций, имеющих несколько перегрузок
+        #/// </param>
+        #/// <returns>
+        #/// Возвращаемый функцией результат
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static System.Object invokeStaticNameGenericType2(
         #    str                 _className
         #  , str                 _methodName
@@ -667,6 +1111,21 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #setPropertyValue
+        #/// <summary>
+        #/// Установка свойства CLR-объекта
+        #/// </summary>
+        #/// <param name="_class">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_propertyName">
+        #/// Название свойства
+        #/// </param>
+        #/// <param name="_propertyValue">
+        #/// Значение свойства
+        #/// </param>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static void setPropertyValue(
         #    System.Object       _class
         #  , str                 _propertyName
@@ -682,6 +1141,24 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #setPropertyValueIndex
+        #/// <summary>
+        #/// Установка свойства CLR-объекта с одним индексом
+        #/// </summary>
+        #/// <param name="_class">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_propertyName">
+        #/// Название свойства
+        #/// </param>
+        #/// <param name="_propertyValue">
+        #/// Значение свойства
+        #/// </param>
+        #/// <param name="_index">
+        #/// Индекс свойства
+        #/// </param>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static void setPropertyValueIndex(
         #    System.Object       _class
         #  , str                 _propertyName
@@ -699,6 +1176,27 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #setPropertyValueIndex2
+        #/// <summary>
+        #/// Установка свойства CLR-объекта с двумя индексами
+        #/// </summary>
+        #/// <param name="_class">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_propertyName">
+        #/// Название свойства
+        #/// </param>
+        #/// <param name="_propertyValue">
+        #/// Значение свойства
+        #/// </param>
+        #/// <param name="_index1">
+        #/// Первый индекс свойства
+        #/// </param>
+        #/// <param name="_index2">
+        #/// Второй индекс свойства
+        #/// </param>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #static void setPropertyValueIndex2(
         #    System.Object       _class
         #  , str                 _propertyName
@@ -717,6 +1215,24 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #setPropertyValuePrivate
+        #/// <summary>
+        #/// Общая функция для установки свойства CLR-объекта
+        #/// </summary>
+        #/// <param name="_class">
+        #/// Объект
+        #/// </param>
+        #/// <param name="_propertyName">
+        #/// Название свойства
+        #/// </param>
+        #/// <param name="_propertyValue">
+        #/// Значение свойства
+        #/// </param>
+        #/// <param name="_indexArray">
+        #/// Массив индексов свойства
+        #/// </param>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #private static void setPropertyValuePrivate(
         #    System.Object       _class
         #  , str                 _propertyName
@@ -754,6 +1270,18 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #typeArray2Str
+        #/// <summary>
+        #/// Преобразование массива типов System.Type[] в строку, где типы перечислены через запятую
+        #/// </summary>
+        #/// <param name="typeArray">
+        #/// Массив типов System.Type[]
+        #/// </param>
+        #/// <returns>
+        #///
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
         #private static str typeArray2Str(
         #    System.Type[]   typeArray
         #)
