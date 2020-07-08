@@ -39,6 +39,12 @@ Formatversion: 1
         #/// <param name="_parameter2">
         #/// Второй параметр
         #/// </param>
+        #/// <param name="_parameter3">
+        #/// Третий параметр
+        #/// </param>
+        #/// <param name="_parameter4">
+        #/// Четвертый параметр
+        #/// </param>
         #/// <returns>
         #/// Массив параметров System.Object[]
         #/// </returns>
@@ -48,6 +54,8 @@ Formatversion: 1
         #static System.Object[] getArray(
         #    anytype     _parameter1 = null
         #  , anytype     _parameter2 = null
+        #  , anytype     _parameter3 = null
+        #  , anytype     _parameter4 = null
         #)
         #{
         #    System.Object[]     ret;
@@ -63,11 +71,19 @@ Formatversion: 1
         #        parametersCount = 1;
         #    }
         #    else
+        #    if ( prmisdefault(_parameter3))
         #    {
         #        parametersCount = 2;
         #    }
-        #
-        #    new InteropPermission( InteropKind::ClrInterop).assert();
+        #    else
+        #    if ( prmisdefault(_parameter4))
+        #    {
+        #        parametersCount = 3;
+        #    }
+        #    else
+        #    {
+        #        parametersCount = 4;
+        #    }
         #
         #    ret = new System.Object[parametersCount]();
         #
@@ -78,6 +94,14 @@ Formatversion: 1
         #    if ( !prmisdefault(_parameter2))
         #    {
         #        ret.SetValue( _parameter2, 1);
+        #    }
+        #    if ( !prmisdefault(_parameter3))
+        #    {
+        #        ret.SetValue( _parameter3, 2);
+        #    }
+        #    if ( !prmisdefault(_parameter4))
+        #    {
+        #        ret.SetValue( _parameter4, 3);
         #    }
         #
         #    return ret;
@@ -105,8 +129,6 @@ Formatversion: 1
         #    int                 i;
         #;
         #    parametersCount = conlen( _parametersContainer);
-        #
-        #    new InteropPermission( InteropKind::ClrInterop).assert();
         #
         #    ret = new System.Object[parametersCount]();
         #
@@ -215,8 +237,6 @@ Formatversion: 1
         #
         #    try
         #    {
-        #        new InteropPermission(InteropKind::ClrInterop).assert();
-        #
         #        if ( !_parametersArray
         #          || CLRInterop::isNull( _parametersArray) )
         #        {
@@ -251,15 +271,31 @@ Formatversion: 1
         #/// <param name="_type2">
         #/// Второй тип
         #/// </param>
+        #/// <param name="_type3">
+        #/// Третий тип
+        #/// </param>
+        #/// <param name="_type4">
+        #/// Четвертый тип
+        #/// </param>
+        #/// <param name="_type5">
+        #/// Пятый тип
+        #/// </param>
+        #/// <param name="_type6">
+        #/// Шестой тип
+        #/// </param>
         #/// <returns>
         #/// Массив типов
         #/// </returns>
         #/// <remarks>
         #///
         #/// </remarks>
-        #private static System.Type[] getTypeArray(
+        #static System.Type[] getTypeArray(
         #    System.Type     _type1 = null
         #  , System.Type     _type2 = null
+        #  , System.Type     _type3 = null
+        #  , System.Type     _type4 = null
+        #  , System.Type     _type5 = null
+        #  , System.Type     _type6 = null
         #)
         #{
         #    System.Type[]   ret;
@@ -275,11 +311,29 @@ Formatversion: 1
         #        typeCount = 1;
         #    }
         #    else
+        #    if ( prmisdefault(_type3))
         #    {
         #        typeCount = 2;
         #    }
-        #
-        #    new InteropPermission(InteropKind::ClrInterop).assert();
+        #    else
+        #    if ( prmisdefault(_type4))
+        #    {
+        #        typeCount = 3;
+        #    }
+        #    else
+        #    if ( prmisdefault(_type5))
+        #    {
+        #        typeCount = 4;
+        #    }
+        #    else
+        #    if ( prmisdefault(_type6))
+        #    {
+        #        typeCount = 5;
+        #    }
+        #    else
+        #    {
+        #        typeCount = 6;
+        #    }
         #
         #    ret = new System.Type[typeCount]();
         #
@@ -290,6 +344,61 @@ Formatversion: 1
         #    if ( !prmisdefault(_type2))
         #    {
         #        ret.SetValue( _type2, 1);
+        #    }
+        #    if ( !prmisdefault(_type3))
+        #    {
+        #        ret.SetValue( _type3, 2);
+        #    }
+        #    if ( !prmisdefault(_type4))
+        #    {
+        #        ret.SetValue( _type4, 3);
+        #    }
+        #    if ( !prmisdefault(_type5))
+        #    {
+        #        ret.SetValue( _type5, 4);
+        #    }
+        #    if ( !prmisdefault(_type6))
+        #    {
+        #        ret.SetValue( _type6, 5);
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #getTypeArrayFromParametersArray
+        #/// <summary>
+        #/// Получение массива типов System.Type[] из массива параметров
+        #/// </summary>
+        #/// <param name="_parameters">
+        #/// Массив параметров
+        #/// </param>
+        #/// <returns>
+        #/// Массив типов
+        #/// </returns>
+        #/// <remarks>
+        #///
+        #/// </remarks>
+        #static System.Type[] getTypeArrayFromParametersArray(
+        #    System.Object[] _parameters
+        #)
+        #{
+        #    System.Type[]   ret;
+        #    System.Object   parameter;
+        #    int             typeCount;
+        #    int             i;
+        #;
+        #    if ( _parameters
+        #      && !CLRInterop::isNull(_parameters))
+        #    {
+        #        typeCount   = _parameters.get_Length();
+        #    }
+        #
+        #    ret = new System.Type[typeCount]();
+        #
+        #    for (i=0; i<typeCount; i++)
+        #    {
+        #        parameter   = _parameters.GetValue(i);
+        #        ret.SetValue( parameter.GetType(), i);
         #    }
         #
         #    return ret;
@@ -397,8 +506,6 @@ Formatversion: 1
         #
         #    try
         #    {
-        #        new InteropPermission(InteropKind::ClrInterop).assert();
-        #
         #        classType      = _object.GetType();
         #
         #        if ( !_parametersArray
@@ -407,24 +514,24 @@ Formatversion: 1
         #            _parametersArray    = new System.Object[0]();
         #        }
         #
-        #        parametersCount = _parametersArray.get_Length();
-        #        parameterTypes  = new System.Type[parametersCount]();
-        #
-        #        for (i = 0; i < parametersCount; i++)
-        #        {
-        #            parameter = _parametersArray.GetValue(i);
-        #            parameterType = parameter.GetType();
-        #            parameterTypes.SetValue(parameterType, i);
-        #        }
-        #
-        #        if ( !_methodTypeArray
-        #          || CLRInterop::isNull( _methodTypeArray) )
-        #        {
-        #            _methodTypeArray    = new System.Type[0]();
-        #        }
-        #
         #        if (_overloaded)
         #        {
+        #            if ( !_methodTypeArray
+        #              || CLRInterop::isNull( _methodTypeArray) )
+        #            {
+        #                _methodTypeArray    = new System.Type[0]();
+        #            }
+        #
+        #            parametersCount = _parametersArray.get_Length();
+        #            parameterTypes  = new System.Type[parametersCount]();
+        #
+        #            for (i = 0; i < parametersCount; i++)
+        #            {
+        #                parameter = _parametersArray.GetValue(i);
+        #                parameterType = parameter.GetType();
+        #                parameterTypes.SetValue(parameterType, i);
+        #            }
+        #
         #            methodInfo = classType.GetMethod(_methodName, parameterTypes); //Gets overload with parameters specified
         #
         #            if (! methodInfo)
@@ -476,23 +583,30 @@ Formatversion: 1
         #                    }
         #                }
         #            }
+        #
+        #            if ( CLRInterop::isNull(methodInfo))
+        #                throw Error( strfmt("Метод %1%2 в классе %3 не найден!"
+        #                           , _methodName
+        #                           , ( !CLRInterop::isNull(_methodTypeArray)
+        #                            && CLRInterop::getAnyTypeForObject(_methodTypeArray.get_Length()) != 0)
+        #                           ? strfmt( "<%1>", SysCLRReflection::typeArray2Str( _methodTypeArray))
+        #                           : ""
+        #                           , CLRInterop::getAnyTypeForObject(classType.ToString()))
+        #                           );
         #        }
         #        else
         #        {
         #            methodInfo = classType.GetMethod(_methodName);
+        #
+        #            if ( CLRInterop::isNull(methodInfo))
+        #                throw Error( strfmt("Метод %1 в классе %2 не найден!"
+        #                           , _methodName
+        #                           , CLRInterop::getAnyTypeForObject(classType.ToString()))
+        #                           );
         #        }
         #
-        #        if ( CLRInterop::isNull(methodInfo))
-        #            throw Error( strfmt("Метод %1%2 в классе %3 не найден!"
-        #                       , _methodName
-        #                       , ( !CLRInterop::isNull(_methodTypeArray)
-        #                        && CLRInterop::getAnyTypeForObject(_methodTypeArray.get_Length()) != 0)
-        #                       ? strfmt( "<%1>", SysCLRReflection::typeArray2Str( _methodTypeArray))
-        #                       : ""
-        #                       , CLRInterop::getAnyTypeForObject(classType.ToString()))
-        #                       );
-        #
-        #        if ( methodInfo.get_IsGenericMethod())
+        #        if ( _methodTypeArray
+        #          && methodInfo.get_IsGenericMethod())
         #        {
         #            methodInfo = methodInfo.MakeGenericMethod(_methodTypeArray);         //Gets generic method of specified type(s)
         #        }
@@ -749,7 +863,7 @@ Formatversion: 1
         #/// <remarks>
         #///
         #/// </remarks>
-        #private static System.Object invokeStaticGeneric(
+        #static System.Object invokeStaticGeneric(
         #    System.Type        _classType
         #  , str                _methodName
         #  , System.Type[]      _methodTypeArray
@@ -773,15 +887,16 @@ Formatversion: 1
         #    int                                 methodsQty, genericMethodParametersQty, j;
         #    str                                 genericMethodName;
         #    System.Reflection.ParameterInfo[]   genericMethodParameters;
+        #    System.Type[]                       genericMethodTypeParameters;
         #    System.Reflection.ParameterInfo     genericMethodParameterInfo;
         #    System.Type                         genericMethodParameterType;
         #    System.Reflection.MethodInfo        genericMethodInfo;
         #    boolean                             parametersEqual;
         #
+        #    int                                 methodTypeParametersCount;
+        #
         #    try
         #    {
-        #        new InteropPermission(InteropKind::ClrInterop).assert();
-        #
         #        if ( !_parametersArray
         #          || CLRInterop::isNull( _parametersArray) )
         #        {
@@ -803,6 +918,7 @@ Formatversion: 1
         #        {
         #            _methodTypeArray    = new System.Type[0]();
         #        }
+        #        methodTypeParametersCount = ClrInterop::getAnyTypeForObject(_methodTypeArray.get_Length());
         #
         #        if (_overloaded)
         #        {
@@ -822,6 +938,12 @@ Formatversion: 1
         #                    {
         #                        if ( methodInfo.get_IsGenericMethodDefinition())
         #                        {
+        #                            genericMethodTypeParameters = methodInfo.GetGenericArguments();
+        #                            if ( ClrInterop::getAnyTypeForObject(genericMethodTypeParameters.get_Length()) != methodTypeParametersCount )
+        #                            {
+        #                                methodInfo = null;
+        #                                continue;
+        #                            }
         #                            genericMethodInfo           = methodInfo.MakeGenericMethod(_methodTypeArray);
         #                        }
         #                        else
@@ -1245,8 +1367,6 @@ Formatversion: 1
         #
         #    try
         #    {
-        #        new InteropPermission(InteropKind::ClrInterop).assert();
-        #
         #        if ( !_indexArray
         #          || CLRInterop::isNull( _indexArray) )
         #        {
@@ -1327,6 +1447,8 @@ Formatversion: 1
         #{
         #    System.Object[] array;
         #;
+        #    new InteropPermission(InteropKind::ClrInterop).assert();
+        #
         #    array   = SysCLRReflection::getArray();
         #    this.assertNotNull( array);
         #
@@ -1350,10 +1472,10 @@ Formatversion: 1
         #    System.Type     type1;
         #    System.Type     type2;
         #;
+        #    new InteropPermission(InteropKind::ClrInterop).assert();
+        #
         #    array   = SysCLRReflection::getArray();
         #    this.assertNotNull( array);
-        #
-        #    new InteropPermission( InteropKind::ClrInterop).assert();
         #
         #    type1   = System.Type::GetType("System.String");
         #    array   = SysCLRReflection::getArray( type1);
@@ -1423,7 +1545,7 @@ Formatversion: 1
         #
         #    s = "test";
         #
-        #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32> в классе System.String не найден!");
+        #    this.parmExceptionExpected( true, "Метод NotexistMethod в классе System.String не найден!");
         #
         #    result  = SysCLRReflection::invokeMethodGenericType(
         #        s
@@ -1442,7 +1564,7 @@ Formatversion: 1
         #
         #    s = "test";
         #
-        #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32,System.String> в классе System.String не найден!");
+        #    this.parmExceptionExpected( true, "Метод NotexistMethod в классе System.String не найден!");
         #
         #    result  = SysCLRReflection::invokeMethodGenericType2(
         #        s
@@ -1462,7 +1584,7 @@ Formatversion: 1
         #
         #    s = "test";
         #
-        #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32> в классе System.String не найден!");
+        #    this.parmExceptionExpected( true, "Метод NotexistMethod в классе System.String не найден!");
         #
         #    result  = SysCLRReflection::invokeMethodGenericTypeName(
         #        s
@@ -1481,7 +1603,7 @@ Formatversion: 1
         #
         #    s = "test";
         #
-        #    this.parmExceptionExpected( true, "Метод NotexistMethod<System.Int32,System.String> в классе System.String не найден!");
+        #    this.parmExceptionExpected( true, "Метод NotexistMethod в классе System.String не найден!");
         #
         #    result  = SysCLRReflection::invokeMethodGenericTypeName2(
         #        s
